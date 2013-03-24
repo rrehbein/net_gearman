@@ -1,9 +1,8 @@
 <?php
+namespace Net\Gearman\Tests;
+
+use Net\Gearman\Connection;
 /**
- * Net_Gearman_ConnectionTest
- *
- * PHP version 5
- *
  * @category   Testing
  * @package    Net_Gearman
  * @subpackage Net_Gearman_Connection
@@ -13,45 +12,48 @@
  * @link       http://pear.php.net/package/Net_Gearman
  * @since      0.2.4
  */
-class Net_Gearman_ConnectionTest extends PHPUnit_Framework_TestCase
+class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * When no server is supplied, it should connect to localhost:4730.
-     *
-     * @return void
      */
     public function testDefaultConnect()
     {
-        $connection = Net_Gearman_Connection::connect();
-        $this->assertType('resource', $connection);
+        try {
+            $connection = Connection::connect();
+        } catch (\Net\Gearman\Exception $exception) {
+            return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
+        }
+
+        $this->assertInternalType('resource', $connection);
         $this->assertEquals('socket', strtolower(get_resource_type($connection)));
 
-        $this->assertTrue(Net_Gearman_Connection::isConnected($connection));
+        $this->assertTrue(Connection::isConnected($connection));
 
-        Net_Gearman_Connection::close($connection);
+        Connection::close($connection);
     }
 
-    /**
-     * 001-echo_req.phpt
-     *
-     * @return void
-     */
     public function testSend()
     {
-        $connection = Net_Gearman_Connection::connect();
-        Net_Gearman_Connection::send($connection, 'echo_req', array('text' => 'foobar'));
+        try {
+            $connection = Connection::connect();
+        } catch (\Net\Gearman\Exception $exception) {
+            return $this->markTestSkipped('Skipped. You can try this test on your machine with gearman running.');
+        }
+
+        Connection::send($connection, 'echo_req', array('text' => 'foobar'));
 
         do {
-            $ret = Net_Gearman_Connection::read($connection);
+            $ret = Connection::read($connection);
         } while (is_array($ret) && !count($ret));
 
-        Net_Gearman_Connection::close($connection);
+        Connection::close($connection);
 
-        $this->assertType('array', $ret);
+        $this->assertInternalType('array', $ret);
         $this->assertEquals('echo_res', $ret['function']);
         $this->assertEquals(17, $ret['type']);
 
-        $this->assertType('array', $ret['data']);
+        $this->assertInternalType('array', $ret['data']);
         $this->assertEquals('foobar', $ret['data']['text']);
     }
 }
