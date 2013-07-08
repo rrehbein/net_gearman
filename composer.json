@@ -1,0 +1,11 @@
+{
+    "name": "rrehbeindoi/net_gearman",
+    "version": "dev-master",
+    "license": "BSD-2-Clause",
+    "description": "Gearman (http://www.danga.com/gearman) is a system to farm out work to other machines. It can load balance function calls to lots of machines and allows you to call functions between languages. It can also run all function calls in parallel.",
+    "autoload": {
+        "psr-0": {
+            "Net_Gearman": "Net/Gearman/"
+        }
+    }
+}
